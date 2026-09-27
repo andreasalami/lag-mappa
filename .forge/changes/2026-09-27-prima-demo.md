@@ -4,7 +4,7 @@
 - Data e perimetro: 2026-09-27, intero progetto
 - Profilo: [PROJECT_PROFILE.md](../PROJECT_PROFILE.md)
 - Piano e approvazione: checkpoint 1 e 2 confermati in chat da Andrea il 2026-09-27
-- Codice studiato/verificato: primo commit su `main`
+- Codice studiato/verificato: `e0d0aac7b420a2249c562bbdf4ad41dd251fd0fd` su `main`
 
 ## Problema e risultato
 
@@ -58,6 +58,8 @@
 - uccelli chiari invece di macchie scure;
 - tetti a pannelli piani;
 - il suggerimento dei comandi sparisce anche toccando un'etichetta.
+
+**Online** (dopo il push): la GitHub Action `test` e la build di Pages sono passate. Il sito pubblicato apre la mappa con 0 errori; l'etichetta Zona tavoli apre la scheda giusta; file caricati solo da `andreasalami.github.io`.
 
 **Non verificato:**
 

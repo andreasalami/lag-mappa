@@ -3,10 +3,11 @@
 ## Stato della conoscenza
 
 - Tipo: nuovo, creato da zero il 2026-09-27; codice di base derivato da `ecovillaggio-valdiluce`.
-- Data, branch e commit analizzato: 2026-09-27, `main`, primo commit (aggiornato dopo il push).
+- Data, branch e commit analizzato: 2026-09-27, `main`, `e0d0aac7b420a2249c562bbdf4ad41dd251fd0fd`.
 - Modifiche locali comprese nella disamina: tutto il contenuto della prima demo.
 - Fonti lette senza modificarle: `../lag_app` (README, `src/pages/Home.tsx`, `src/features/*` per le ancore delle sezioni, `public/logo-lag.png`, `src/styles/tokens.css`); la foto aerea di Cascina Marasco e la mappa dell'evento fornite in chat.
 - Copertura e limiti:
+  - verificati online: CI `test` e build di Pages superate su `e0d0aac`; https://andreasalami.github.io/lag-mappa/ in modalità mappa, 9 etichette, 0 errori, richieste solo al dominio di Pages;
   - verificati in browser locale: 375×812 e larghezza desktop, etichette, menu, tastiera, modalità lettura, guasto di Three.js, nessuna richiesta esterna;
   - non verificati: ramo WebGL assente, "riduci movimento", prestazioni su un telefono reale;
   - le posizioni delle zone sono un'ipotesi.
