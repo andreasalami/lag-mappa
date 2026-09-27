@@ -60,6 +60,11 @@ function start() {
   // Stato logico del personaggio (casella) + animazione del salto.
   const player = { c: START.c, r: START.r, next: null };
   const hop = { fx: 0, fz: 0, t: 1, bump: false, squash: 0 };
+  // Movimento continuo: si continua a camminare finché un tasto o il dito restano giù.
+  const pressed = []; // tasti di direzione premuti, l'ultimo vince
+  let dragDir = null; // direzione del trascinamento sulla mappa
+  let cooldown = 0; // pausa minima tra due passi (serve anche con "riduci movimento")
+  const heldDir = () => dragDir ?? pressed.at(-1) ?? null;
 
   function place(c, r) {
     const { x, z } = toWorld(c, r);
@@ -75,6 +80,7 @@ function start() {
       return;
     }
     hint.classList.add('gone');
+    cooldown = HOP;
     const [dc, dr] = DIRS[dir];
     hero.rotation.y = FACING[dir];
     const c = player.c + dc;
@@ -110,6 +116,9 @@ function start() {
         }
       }
     }
+    cooldown = Math.max(0, cooldown - dt);
+    const held = heldDir();
+    if (held && hop.t >= 1 && cooldown === 0 && !player.next) move(held);
     if (hop.squash > 0) hop.squash = Math.max(0, hop.squash - dt / 0.12);
     const s = hop.squash;
     hero.userData.body.scale.set(1 + 0.15 * s, 1 - 0.25 * s, 1 + 0.15 * s);
@@ -166,23 +175,48 @@ function start() {
     const dir = KEYS[e.code];
     if (!dir || e.altKey || e.ctrlKey || e.metaKey || html.classList.contains('reading')) return;
     e.preventDefault();
-    if (!e.repeat) move(dir);
+    if (e.repeat) return; // la ripetizione la gestisce heldDir()
+    if (!pressed.includes(dir)) pressed.push(dir);
+    move(dir);
   });
+  addEventListener('keyup', (e) => {
+    const i = pressed.indexOf(KEYS[e.code]);
+    if (i >= 0) pressed.splice(i, 1);
+  });
+  addEventListener('blur', () => (pressed.length = 0));
 
-  // Swipe (o click) sulla mappa: tocco breve = avanti.
+  // Sulla mappa: tocco breve = un passo avanti; trascinando e tenendo giù il dito
+  // (o il mouse) si cammina nella direzione del trascinamento finché non si rilascia.
   let sx = 0;
   let sy = 0;
+  let pointerDown = false;
   canvas.addEventListener('pointerdown', (e) => {
     sx = e.clientX;
     sy = e.clientY;
+    pointerDown = true;
+    dragDir = null;
+    canvas.setPointerCapture(e.pointerId);
   });
-  canvas.addEventListener('pointerup', (e) => {
+  canvas.addEventListener('pointermove', (e) => {
+    if (!pointerDown) return;
     const dx = e.clientX - sx;
     const dy = e.clientY - sy;
-    if (Math.hypot(dx, dy) < 24) move('up');
-    else if (Math.abs(dx) > Math.abs(dy)) move(dx > 0 ? 'right' : 'left');
-    else move(dy > 0 ? 'down' : 'up');
+    if (Math.hypot(dx, dy) < 24) return;
+    const dir = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+    if (dir === dragDir) return;
+    const first = dragDir === null;
+    dragDir = dir;
+    if (first) move(dir);
   });
+  const release = () => {
+    pointerDown = false;
+    dragDir = null;
+  };
+  canvas.addEventListener('pointerup', () => {
+    if (pointerDown && dragDir === null) move('up');
+    release();
+  });
+  canvas.addEventListener('pointercancel', release);
 
   place(START.c, START.r);
   hero.rotation.y = FACING.right; // guarda a ovest, verso la cascina

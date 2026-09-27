@@ -1,6 +1,6 @@
 # LAG Mappa: dove succede cosa?
 
-Demo di una mappa 3D voxel, in stile Crossy Road, per **L'Agro ai Giovani** a Cascina Marasco (Cremona). La cascina è ricostruita dalla foto aerea e ambientata al tramonto. Gli stand e lo Stage 1 sono posizionati come nelle foto dell'organizzatore. La telecamera guarda da nord-est per mostrare il porticato con gli stand. Ogni zona dell'evento ha un'etichetta colorata e una scheda: ingresso, casse, cucina, bar, birra, giochi, zona tavoli, Stage 1, Stage 2. Si naviga toccando le etichette o il menu, oppure muovendo il personaggio con le cuffie.
+Demo di una mappa 3D voxel, in stile Crossy Road, per **L'Agro ai Giovani** a Cascina Marasco (Cremona). La cascina è ricostruita dalla foto aerea e ambientata al tramonto. Gli stand e lo Stage 1 sono posizionati come nelle foto dell'organizzatore. La telecamera guarda da nord-est per mostrare il porticato con gli stand. Ogni zona dell'evento ha un'etichetta colorata e una scheda: ingresso, casse, cucina, bar, birra, giochi, zona tavoli, Stage 1, Stage 2. Si naviga toccando le etichette o il menu, oppure muovendo il personaggio con le cuffie: tenendo premute frecce/WASD, o trascinando e tenendo giù il dito, cammina finché non si rilascia.
 
 Sito: <https://andreasalami.github.io/lag-mappa/>
 

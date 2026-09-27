@@ -26,12 +26,12 @@
 - **Stand**: nel porticato dell'ala sud, rivolti verso la piazza.
 - **Stage 1**: sulla terra battuta davanti all'edificio ad archi a sud-ovest.
 - **Vista**: la telecamera guarda da nord-est.
+- **Stage 2**: nel cortile esterno a nord-est, al posto delle 5 auto (indicazione di Andrea).
 
 **Ipotesi aperte:**
 
 - **Ingresso**: direzione d'ingresso dalla strada a est.
 - **Casse e Giochi**: nell'angolo nord-est.
-- **Stage 2**: sul campo a ovest.
 
 ## Documenti autorevoli
 
@@ -44,3 +44,4 @@
 
 - [2026-09-27 Prima demo](changes/2026-09-27-prima-demo.md)
 - [2026-09-27 Vista da nord e stand nel porticato](changes/2026-09-27-vista-da-nord.md)
+- [2026-09-27 Stage 2 nel cortile nord-est e movimento continuo](changes/2026-09-27-stage2-e-movimento-continuo.md)

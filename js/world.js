@@ -172,8 +172,9 @@ function buildStatic(scene) {
         else t = rand(c, r) < 0.38 ? 'T' : '.';
       }
       const odd = r & 1;
-      // Sotto chioschi, palchi e tavoli c'è il fondo della loro zona: terra sotto i palchi, cemento altrove.
-      const event = 'KXnFypw'.includes(t) ? (zoneAt(c, r)?.startsWith('stage') ? C.dirt : C.yard) : null;
+      // Sotto chioschi, palchi e tavoli c'è il fondo della loro zona:
+      // terra allo Stage 1, ghiaia nel cortile dello Stage 2, cemento in piazza.
+      const event = 'KXnFypw'.includes(t) ? ({ stage1: C.dirt, stage2: C.road }[zoneAt(c, r)] ?? C.yard) : null;
       const ground = event ?? { s: C.road, a: inside ? C.road : C.grassOut[odd], '@': C.road, g: C.yard, d: C.dirt, ';': C.field[c & 1] }[t]
         ?? (inside ? C.grass[odd] : C.grassOut[odd]);
       box(x, -0.6, z, 1, 0.6, 1, ground);
