@@ -7,15 +7,25 @@
   <meta name="description" content="Mappa 3D dell'evento L'Agro ai Giovani a Cascina Marasco (Cremona): palchi, cucina, bar, birra, giochi, casse e zona tavoli.">
   <meta name="theme-color" content="#091422">
   <link rel="icon" href="assets/favicon-32.png">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=4">
   <script>
     // Senza JavaScript la pagina resta in modalità lettura; con JS mostra il caricamento
     // finché il 3D è pronto, o al massimo 8 secondi.
     document.documentElement.classList.add('js');
     setTimeout(() => document.documentElement.classList.add('ready'), 8000);
   </script>
-  <script type="importmap">{ "imports": { "three": "./vendor/three/three.module.js" } }</script>
-  <script type="module" src="js/main.js" onerror="document.documentElement.classList.add('ready')"></script>
+  <!-- ?v=N su CSS e moduli: a ogni rilascio si aumenta N ovunque, così il browser non mescola
+       file vecchi (in cache fino a 10 minuti su GitHub Pages) con file nuovi. -->
+  <script type="importmap">{
+    "imports": {
+      "three": "./vendor/three/three.module.js",
+      "./js/map.js": "./js/map.js?v=4",
+      "./js/world.js": "./js/world.js?v=4",
+      "./js/labels.js": "./js/labels.js?v=4",
+      "./js/overlay.js": "./js/overlay.js?v=4"
+    }
+  }</script>
+  <script type="module" src="js/main.js?v=4" onerror="document.documentElement.classList.add('ready')"></script>
 </head>
 <body>
   <canvas id="world" aria-hidden="true"></canvas>

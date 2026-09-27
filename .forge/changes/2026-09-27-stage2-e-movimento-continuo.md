@@ -45,4 +45,4 @@ Concetti: eventi `keydown`/`keyup` e `repeat`, Pointer Events con `setPointerCap
 
 ## Annotazioni successive
 
-Nessuna.
+- 2026-09-27, dopo il push di `d002f8a`: sul sito online il browser di verifica ha usato i moduli della versione precedente, presi dalla cache (GitHub Pages permette fino a 10 minuti di cache), e il tasto tenuto premuto non funzionava. Il rischio era già segnalato in [vista-da-nord](2026-09-27-vista-da-nord.md). Correzione nel commit successivo: `?v=N` su CSS e moduli tramite import map, e un test che impone una sola `N`. Verificato in locale (127.0.0.1:8084): tutte le richieste con `?v=4`, movimento continuo funzionante.

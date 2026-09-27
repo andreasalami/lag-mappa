@@ -51,3 +51,12 @@ test('ogni zona ha scheda, voce di menu ed etichetta in index.html', () => {
   }
   // Le etichette sulla mappa sono generate da main.js a partire dal menu: basta il menu.
 });
+
+test('CSS e moduli in index.html hanno tutti la stessa versione ?v=', () => {
+  const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+  const versions = new Set([...html.matchAll(/\.(?:js|css)\?v=(\d+)/g)].map((m) => m[1]));
+  assert.equal(versions.size, 1, `versioni diverse: ${[...versions].join(', ')}`);
+  for (const f of ['style.css', 'js/main.js', 'js/map.js', 'js/world.js', 'js/labels.js', 'js/overlay.js']) {
+    assert.ok(html.includes(`${f}?v=`), `${f} senza versione`);
+  }
+});

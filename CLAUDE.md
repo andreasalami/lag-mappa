@@ -32,6 +32,7 @@ Demo single-page 3D voxel event map ("Dove succede cosa?") for L'Agro ai Giovani
 - **Andrea authorized (2026-09-27) autonomous commits and direct pushes to `main` for this repository**, after local verification (`node --test` + browser check).
 - Still ask before: force push, history rewrite, repository deletion or visibility change, settings/security changes beyond Pages, new dependencies or external services, reading LAG app live data.
 - Conventional Commits in English.
+- Before every push that changes CSS or JS, bump `?v=N` everywhere in `index.html` (import map, module script, stylesheet); the test enforces a single N. Otherwise visitors can mix cached old modules with new ones for up to 10 minutes.
 
 ## Documentation
 
