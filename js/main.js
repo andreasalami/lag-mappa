@@ -9,8 +9,10 @@ const html = document.documentElement;
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const HOP = 0.14; // secondi per un salto
 
-const DIRS = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
-const FACING = { up: 0, down: Math.PI, left: Math.PI / 2, right: -Math.PI / 2 };
+// La telecamera guarda da nord-est verso sud, così si vedono le arcate con gli stand:
+// "su" sullo schermo è il sud della mappa (+z), "sinistra" è l'est (+x).
+const DIRS = { up: [0, 1], down: [0, -1], left: [1, 0], right: [-1, 0] };
+const FACING = { up: Math.PI, down: 0, left: -Math.PI / 2, right: Math.PI / 2 };
 const KEYS = {
   ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down',
   ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right',
@@ -28,8 +30,8 @@ function start() {
   world.scene.add(hero);
 
   const camera = new THREE.OrthographicCamera();
-  const OFFSET = new THREE.Vector3(3.2, 10, 7.5);
-  const SUN = new THREE.Vector3(-10, 7, 3); // sole basso a ovest: tramonto
+  const OFFSET = new THREE.Vector3(3.2, 10, -7.5); // da nord-est
+  const SUN = new THREE.Vector3(-8, 7, -7); // tramonto d'estate: sole basso a nord-ovest
   const focus = new THREE.Vector3();
   const target = new THREE.Vector3();
 
@@ -183,9 +185,9 @@ function start() {
   });
 
   place(START.c, START.r);
-  hero.rotation.y = FACING.left; // guarda verso la cascina
+  hero.rotation.y = FACING.right; // guarda a ovest, verso la cascina
   enterZone();
-  focus.set(hero.position.x, 0, hero.position.z - 1);
+  focus.set(hero.position.x, 0, hero.position.z + 1);
 
   let last = performance.now();
   renderer.setAnimationLoop((now) => {
@@ -193,7 +195,7 @@ function start() {
     last = now;
     animate(dt);
     world.update(REDUCED ? 0 : dt);
-    target.set(hero.position.x, 0, hero.position.z - 1);
+    target.set(hero.position.x, 0, hero.position.z + 1);
     focus.lerp(target, REDUCED ? 1 : 1 - Math.exp(-dt * 5));
     camera.position.copy(focus).add(OFFSET);
     camera.lookAt(focus);

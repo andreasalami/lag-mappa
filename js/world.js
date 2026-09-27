@@ -1,6 +1,6 @@
 // Scena voxel di Cascina Marasco al tramonto, costruita da map.js.
 import * as THREE from 'three';
-import { grid, W, H, tileAt, zoneAt, zoneCells, ZONES } from './map.js';
+import { grid, W, H, tileAt, walkable, zoneAt, zoneCells, zoneCenter, ZONES } from './map.js';
 
 const unit = new THREE.BoxGeometry(1, 1, 1);
 const materials = new Map();
@@ -42,7 +42,7 @@ const C = {
   grassOut: [0x74ab47, 0x6ea343],
   field: [0xe0c67c, 0xd4b96c],
   road: 0xd6cbb8,
-  yard: 0xeadfc8,
+  yard: 0xd8d5ce, // piazza in cemento
   dirt: 0xb48d60,
   trunk: 0x8a5a36,
   leaves: [0x4caf50, 0x43a047, 0x66bb6a, 0x7cb342],
@@ -57,7 +57,7 @@ const C = {
   skin: [0xf1c27d, 0xe0ac69, 0xc68642, 0x8d5524],
 };
 
-const BUILDING = 'SP';
+const BUILDING = 'SPV';
 const isBuilding = (t) => t && BUILDING.includes(t);
 
 // Distanza dal bordo dell'edificio: serve per il tetto a gradoni.
@@ -80,6 +80,53 @@ function groupBox(id, ch) {
   const a = toWorld(Math.min(...cs), Math.min(...rs));
   const b = toWorld(Math.max(...cs), Math.max(...rs));
   return { x0: a.x, z0: a.z, x1: b.x, z1: b.z, cx: (a.x + b.x) / 2, cz: (a.z + b.z) / 2, w: b.x - a.x + 1, d: b.z - a.z + 1 };
+}
+
+// Direzione "davanti" di un gruppo: dal suo centro verso il centro della sua zona,
+// sull'asse prevalente. Così chioschi, palchi e food truck si girano da soli se si spostano.
+function facing(k, id) {
+  const zc = zoneCenter(id);
+  const { x, z } = toWorld(zc.c, zc.r);
+  const dx = x - k.cx;
+  const dz = z - k.cz;
+  return Math.abs(dx) > Math.abs(dz) ? { dx: Math.sign(dx), dz: 0 } : { dx: 0, dz: Math.sign(dz) || 1 };
+}
+
+// Gruppo costruito con il davanti verso +z locale e poi ruotato verso `f`.
+function orientedGroup(scene, k, f) {
+  const g = new THREE.Group();
+  g.position.set(k.cx, 0, k.cz);
+  g.rotation.y = Math.atan2(f.dx, f.dz);
+  scene.add(g);
+  const across = f.dz ? k.w : k.d; // larghezza del fronte
+  const deep = f.dz ? k.d : k.w;
+  return { g, across, deep };
+}
+
+function makeKiosk(scene, id) {
+  const k = groupBox(id, 'K');
+  if (!k) return;
+  const color = ZONE_COLORS[id];
+  const { g, across: w } = orientedGroup(scene, k, facing(k, id));
+  part(g, 0, 0, -0.1, w - 0.1, 0.6, 0.7, color);
+  part(g, 0, 0.6, 0, w - 0.1, 0.06, 0.8, 0xffffff);
+  for (const dx of [-w / 2 + 0.1, w / 2 - 0.1]) part(g, dx, 0, 0.4, 0.07, 1.35, 0.07, 0xffffff);
+  const n = Math.round(w * 2);
+  for (let i = 0; i < n; i++) part(g, -w / 2 + (i + 0.5) * (w / n), 1.35, 0, w / n, 0.14, 1.05, i & 1 ? 0xffffff : color);
+  part(g, 0, 1.49, -0.35, w * 0.7, 0.34, 0.08, color, true);
+  part(g, 0, 1.6, -0.3, w * 0.45, 0.06, 0.02, 0xffffff, true);
+}
+
+function makeFoodTruck(scene, id) {
+  const k = groupBox(id, 'F');
+  if (!k) return;
+  const { g, across: L } = orientedGroup(scene, k, facing(k, id)); // sportello sul davanti
+  part(g, 0, 0.15, 0, L - 0.1, 1.05, 0.9, 0xffffff);
+  part(g, 0, 0.62, 0, L - 0.08, 0.16, 0.92, 0xf2802e);
+  part(g, -0.2, 0.6, 0.46, 0.9, 0.36, 0.02, 0x263238);
+  part(g, -0.2, 1.02, 0.62, 1.0, 0.05, 0.34, 0xf2802e);
+  part(g, -0.2, 1.2, 0, 0.5, 0.2, 0.08, 0xffd23f, true);
+  for (const dx of [-L / 2 + 0.35, L / 2 - 0.35]) for (const dz of [-0.4, 0.4]) part(g, dx, 0, dz, 0.22, 0.22, 0.1, 0x212121);
 }
 
 function buildStatic(scene) {
@@ -125,8 +172,8 @@ function buildStatic(scene) {
         else t = rand(c, r) < 0.38 ? 'T' : '.';
       }
       const odd = r & 1;
-      // Sotto chioschi, palchi e tavoli c'è il fondo della loro zona: terra sullo Stage 2, aia altrove.
-      const event = 'KXnFyp'.includes(t) ? (zoneAt(c, r) === 'stage2' ? C.dirt : C.yard) : null;
+      // Sotto chioschi, palchi e tavoli c'è il fondo della loro zona: terra sotto i palchi, cemento altrove.
+      const event = 'KXnFypw'.includes(t) ? (zoneAt(c, r)?.startsWith('stage') ? C.dirt : C.yard) : null;
       const ground = event ?? { s: C.road, a: inside ? C.road : C.grassOut[odd], '@': C.road, g: C.yard, d: C.dirt, ';': C.field[c & 1] }[t]
         ?? (inside ? C.grass[odd] : C.grassOut[odd]);
       box(x, -0.6, z, 1, 0.6, 1, ground);
@@ -140,14 +187,23 @@ function buildStatic(scene) {
           for (const dx of [-0.25, 0, 0.25]) box(x + dx, 0.16, z, 0.14, 0.16, 0.14, (c + r) & 1 ? 0x7cb342 : 0x9ccc65);
           break;
         case 'S':
-        case 'P': {
+        case 'P':
+        case 'V': {
           const d = roofStep(c, r, isBuilding);
           const wallH = 1.3;
           if (d === 0) {
             box(x, 0, z, 1, wallH, 1, C.wall[(c + r) & 1]);
-            // porticato sul lato che guarda uno spazio aperto
-            if ((c & 1) === 0 && !isBuilding(tileAt(c, r + 1))) box(x, 0, z + 0.5, 0.5, 0.95, 0.02, 0x5b4636);
-            if ((c & 1) === 1 && !isBuilding(tileAt(c, r - 1))) box(x, 0.55, z - 0.5, 0.3, 0.3, 0.02, 0x3b3b4a);
+            // Facciate: arcate verso gli spazi calpestabili (tende verdi per 'V'), finestre altrove.
+            for (const [dc, dr] of [[0, -1], [0, 1], [-1, 0], [1, 0]]) {
+              if (isBuilding(tileAt(c + dc, r + dr))) continue;
+              const face = (y, h, size, color) =>
+                box(x + dc * 0.5, y, z + dr * 0.5, dr ? size : 0.03, h, dr ? 0.03 : size, color);
+              const even = ((dr ? c : r) & 1) === 0;
+              if (!walkable(c + dc, r + dr)) {
+                if (!even) face(0.55, 0.3, 0.3, 0x3b3b4a);
+              } else if (t === 'V') face(0, 1.1, 0.96, 0x2e7d4f);
+              else if (even) face(0, 0.95, 0.5, 0x5b4636);
+            }
           }
           // Coppi a gradoni; pannelli solari in file piane.
           if (t === 'P') box(x, wallH - 0.05, z, 1, 0.3, 1, C.pv[r & 1]);
@@ -167,6 +223,9 @@ function buildStatic(scene) {
           box(x, 0.42, z, 0.96, 0.07, 0.5, C.wood);
           box(x, 0, z, 0.08, 0.42, 0.4, C.darkWood);
           for (const dz of [-0.38, 0.38]) box(x, 0.22, z + dz, 0.96, 0.06, 0.18, C.wood);
+          break;
+        case 'w':
+          [0xfdd835, 0x1e88e5, 0x43a047, 0x607d8b].forEach((color, i) => box(x - 0.33 + i * 0.22, 0, z, 0.19, 0.42, 0.34, color));
           break;
         case 'y':
           box(x, 0, z, 0.1, 0.35, 0.1, 0x37474f);
@@ -190,21 +249,6 @@ function buildStatic(scene) {
     }
   }
 
-  // Chioschi: bancone e tendone a righe del colore della zona.
-  for (const id of ['cucina', 'bar', 'birra', 'giochi', 'casse']) {
-    const k = groupBox(id, 'K');
-    const color = ZONE_COLORS[id];
-    box(k.cx, 0, k.cz - 0.1, k.w - 0.1, 0.6, 0.7, color);
-    box(k.cx, 0.6, k.cz, k.w - 0.1, 0.06, 0.8, 0xffffff);
-    for (const dx of [-k.w / 2 + 0.1, k.w / 2 - 0.1]) box(k.cx + dx, 0, k.cz + 0.4, 0.07, 1.35, 0.07, 0xffffff);
-    const n = Math.round(k.w * 2);
-    for (let i = 0; i < n; i++) {
-      box(k.x0 - 0.5 + (i + 0.5) * (k.w / n), 1.35, k.cz, k.w / n, 0.14, 1.05, i & 1 ? 0xffffff : color);
-    }
-    box(k.cx, 1.49, k.cz - 0.35, k.w * 0.7, 0.34, 0.08, color, true);
-    box(k.cx, 1.6, k.cz - 0.3, k.w * 0.45, 0.06, 0.02, 0xffffff, true);
-  }
-
   // Lucine sopra la zona tavoli.
   const tv = zoneCells('tavoli');
   const a = toWorld(Math.min(...tv.map((p) => p.c)), Math.min(...tv.map((p) => p.r)));
@@ -214,15 +258,6 @@ function buildStatic(scene) {
     box((a.x + b.x) / 2, 1.86, zz, b.x - a.x + 0.8, 0.02, 0.02, 0x333333);
     for (let xx = a.x - 0.2; xx <= b.x + 0.2; xx += 0.5) box(xx, 1.76, zz, 0.08, 0.1, 0.08, 0xffe08a, true);
   }
-
-  // Food truck dello Stage 2.
-  const f = groupBox('stage2', 'F');
-  box(f.cx, 0.15, f.cz, 0.9, 1.05, f.d - 0.1, 0xffffff);
-  box(f.cx, 0.62, f.cz, 0.92, 0.16, f.d - 0.08, 0xf2802e);
-  box(f.cx - 0.46, 0.6, f.cz - 0.2, 0.02, 0.36, 0.9, 0x263238);
-  box(f.cx - 0.62, 1.02, f.cz - 0.2, 0.34, 0.05, 1.0, 0xf2802e);
-  box(f.cx, 1.2, f.cz - 0.2, 0.5, 0.2, 0.08, 0xffd23f, true);
-  for (const dz of [-f.d / 2 + 0.35, f.d / 2 - 0.35]) for (const dx of [-0.4, 0.4]) box(f.cx + dx, 0, f.cz + dz, 0.1, 0.22, 0.22, 0x212121);
 
   for (const { color, glow, list } of buckets.values()) {
     const mesh = new THREE.InstancedMesh(unit, mat(color, glow), list.length);
@@ -259,21 +294,21 @@ function makeStage(scene, id, beams, screens) {
   const k = groupBox(id, 'X');
   const floor = 0.45;
   const top = 2.4;
-  part(scene, k.cx, 0, k.cz, k.w, floor, k.d, 0x2b2b35);
-  const screen = part(scene, k.x0 - 0.35, floor, k.cz, 0.12, 1.5, k.d * 0.9, 0xff4fd8, true);
+  // Costruito con il pubblico verso +z locale, poi ruotato verso la zona.
+  const { g, across: w, deep: d } = orientedGroup(scene, k, facing(k, id));
+  part(g, 0, 0, 0, w, floor, d, 0x2b2b35);
+  const screen = part(g, 0, floor, -d / 2 + 0.15, w * 0.9, 1.5, 0.12, 0xff4fd8, true);
   screen.material = new THREE.MeshBasicMaterial({ color: 0xff4fd8 });
   screens.push(screen);
-  const xs = [k.x0 - 0.5, k.x1 + 0.5];
-  const zs = [k.z0 - 0.5, k.z1 + 0.5];
-  for (const x of xs) for (const z of zs) part(scene, x, 0, z, 0.12, top, 0.12, 0x9aa0a6);
-  for (const x of xs) part(scene, x, top, k.cz, 0.14, 0.14, k.d + 1.1, 0x9aa0a6);
-  for (const z of zs) part(scene, k.cx, top, z, k.w + 1.1, 0.14, 0.14, 0x9aa0a6);
-  for (const z of [k.z0 - 0.25, k.z1 + 0.25]) part(scene, k.x1 + 0.2, floor, z, 0.35, 0.75, 0.35, 0x1b1b1f);
-  part(scene, k.cx - 0.1, floor, k.cz, 0.35, 0.45, 0.9, 0x1b1b1f); // console
+  for (const x of [-w / 2, w / 2]) for (const z of [-d / 2, d / 2]) part(g, x, 0, z, 0.12, top, 0.12, 0x9aa0a6);
+  for (const x of [-w / 2, w / 2]) part(g, x, top, 0, 0.14, 0.14, d + 0.14, 0x9aa0a6);
+  for (const z of [-d / 2, d / 2]) part(g, 0, top, z, w + 0.14, 0.14, 0.14, 0x9aa0a6);
+  for (const x of [-w / 2 + 0.25, w / 2 - 0.25]) part(g, x, floor, d / 2 - 0.3, 0.35, 0.75, 0.35, 0x1b1b1f);
+  part(g, 0, floor, -0.1, 0.9, 0.45, 0.35, 0x1b1b1f); // console
   const dj = createPerson({ shirt: 0x1e3a5f });
-  dj.position.set(k.cx - 0.45, floor, k.cz);
-  dj.rotation.y = -Math.PI / 2; // guarda verso est, il pubblico
-  scene.add(dj);
+  dj.position.set(0, floor, -0.45);
+  dj.rotation.y = Math.PI; // il DJ guarda il pubblico (+z locale)
+  g.add(dj);
 
   const colors = [0xff4fd8, 0x4fc3ff, 0xffd23f];
   const cone = new THREE.ConeGeometry(0.55, 3, 12, 1, true);
@@ -282,11 +317,12 @@ function makeStage(scene, id, beams, screens) {
     const beam = new THREE.Mesh(cone, new THREE.MeshBasicMaterial({
       color, transparent: true, opacity: 0.22, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide,
     }));
-    beam.position.set(k.x1 + 0.5, top, k.z0 + ((i + 0.5) * k.d) / colors.length - 0.5);
+    beam.position.set(-w / 2 + ((i + 0.5) * w) / colors.length, top, d / 2);
     beam.userData.phase = i * 2.1;
-    scene.add(beam);
+    g.add(beam);
     beams.push(beam);
   });
+  return { x: k.cx, z: k.cz };
 }
 
 export function createWorld() {
@@ -305,8 +341,11 @@ export function createWorld() {
 
   const beams = [];
   const screens = [];
-  makeStage(scene, 'stage1', beams, screens);
-  makeStage(scene, 'stage2', beams, screens);
+  const stages = { stage1: makeStage(scene, 'stage1', beams, screens), stage2: makeStage(scene, 'stage2', beams, screens) };
+  ZONES.forEach((id) => {
+    makeKiosk(scene, id);
+    makeFoodTruck(scene, id);
+  });
 
   // Pubblico che balla davanti ai palchi.
   const dancers = [];
@@ -317,7 +356,8 @@ export function createWorld() {
       for (let i = 0; i < 2; i++) {
         const person = createPerson({ shirt: pick(C.shirts, c + i, r), skin: pick(C.skin, r, c + i), headphones: false });
         person.position.set(x - 0.2 + i * 0.4, 0, z - 0.2 + rand(c, r + i) * 0.4);
-        person.rotation.y = Math.PI / 2; // guardano verso ovest, cioè il palco
+        const stage = stages[zoneAt(c, r)];
+        if (stage) person.rotation.y = Math.atan2(person.position.x - stage.x, person.position.z - stage.z); // verso il palco
         person.scale.setScalar(0.85);
         person.userData.phase = rand(c + i, r) * 6;
         scene.add(person);
@@ -331,8 +371,8 @@ export function createWorld() {
   function update(dt) {
     time += dt;
     for (const b of beams) {
-      b.rotation.z = 0.5 + Math.sin(time * 0.9 + b.userData.phase) * 0.35; // inclinati verso il pubblico (est)
-      b.rotation.x = Math.sin(time * 0.7 + b.userData.phase) * 0.4;
+      b.rotation.x = -0.5 + Math.sin(time * 0.9 + b.userData.phase) * 0.35; // inclinati verso il pubblico
+      b.rotation.z = Math.sin(time * 0.7 + b.userData.phase) * 0.4;
     }
     screens.forEach((s, i) => s.material.color.setHSL((time * 0.05 + i * 0.3) % 1, 0.85, 0.55));
     for (const d of dancers) {
