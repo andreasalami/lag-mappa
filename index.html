@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Dove succede cosa? · L'Agro ai Giovani</title>
+  <meta name="description" content="Mappa 3D dell'evento L'Agro ai Giovani a Cascina Marasco (Cremona): palchi, cucina, bar, birra, giochi, casse e zona tavoli.">
+  <meta name="theme-color" content="#091422">
+  <link rel="icon" href="assets/favicon-32.png">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    // Senza JavaScript la pagina resta in modalità lettura; con JS mostra il caricamento
+    // finché il 3D è pronto, o al massimo 8 secondi.
+    document.documentElement.classList.add('js');
+    setTimeout(() => document.documentElement.classList.add('ready'), 8000);
+  </script>
+  <script type="importmap">{ "imports": { "three": "./vendor/three/three.module.js" } }</script>
+  <script type="module" src="js/main.js" onerror="document.documentElement.classList.add('ready')"></script>
+</head>
+<body>
+  <canvas id="world" aria-hidden="true"></canvas>
+  <div id="pins" aria-hidden="true"></div>
+  <canvas id="sky" aria-hidden="true"></canvas>
+  <div class="loading" aria-hidden="true">🎧 Si accendono le luci…</div>
+
+  <header class="topbar">
+    <a class="brand" href="https://andreasalami.github.io/lag_app/" target="_blank" rel="noopener">
+      <img src="assets/logo-lag.png" alt="L'Agro ai Giovani" width="289" height="320">
+    </a>
+    <div class="title">
+      <h1>Dove succede <em>cosa?</em></h1>
+      <p>Mappa dell'evento · Cascina Marasco</p>
+    </div>
+    <button id="read-toggle" type="button" aria-pressed="false"><b aria-hidden="true">📖</b> <span>Leggi tutto</span></button>
+    <nav aria-label="Zone dell'evento">
+      <a href="#z-ingresso" data-zone="ingresso" style="--zone: #1e3a5f"><span aria-hidden="true">➡️</span> <span class="name">Ingresso</span></a>
+      <a href="#z-casse" data-zone="casse" style="--zone: #1e88e5"><span aria-hidden="true">🎫</span> <span class="name">Casse</span></a>
+      <a href="#z-cucina" data-zone="cucina" style="--zone: #e53935"><span aria-hidden="true">🍲</span> <span class="name">Cucina</span></a>
+      <a href="#z-bar" data-zone="bar" style="--zone: #fb8c00"><span aria-hidden="true">🍸</span> <span class="name">Bar</span></a>
+      <a href="#z-birra" data-zone="birra" style="--zone: #43a047"><span aria-hidden="true">🍺</span> <span class="name">Birra</span></a>
+      <a href="#z-giochi" data-zone="giochi" style="--zone: #8e24aa"><span aria-hidden="true">🎲</span> <span class="name">Giochi</span></a>
+      <a href="#z-tavoli" data-zone="tavoli" style="--zone: #fdd835; --on: #0d2440"><span aria-hidden="true">🪑</span> <span class="name">Zona tavoli</span></a>
+      <a href="#z-stage1" data-zone="stage1" style="--zone: #ffffff; --on: #0d2440"><span aria-hidden="true">🎵</span> <span class="name">Stage 1</span></a>
+      <a href="#z-stage2" data-zone="stage2" style="--zone: #ffffff; --on: #0d2440"><span aria-hidden="true">🎧</span> <span class="name">Stage 2</span></a>
+    </nav>
+  </header>
+
+  <main id="zones">
+    <article class="card" id="z-ingresso" style="--zone: #1e3a5f">
+      <header><span class="badge" aria-hidden="true">➡️</span><h2>Ingresso</h2><button class="close" type="button" aria-label="Chiudi scheda">✕</button></header>
+      <p><strong>L'Agro ai Giovani</strong> è il festival benefico di Cascina Marasco, a Cremona: DJ set e musica live. Il ricavato sostiene Agropolis ONLUS.</p>
+      <p>Da qui parte il giro: tocca le etichette sulla mappa per vedere dove sono casse, stand e palchi, oppure muovi il personaggio.</p>
+      <a class="app-link" href="https://andreasalami.github.io/lag_app/#biglietti" target="_blank" rel="noopener">Biglietti nella LAG app ↗</a>
+    </article>
+
+    <article class="card" id="z-casse" style="--zone: #1e88e5">
+      <header><span class="badge" aria-hidden="true">🎫</span><h2>Casse</h2><button class="close" type="button" aria-label="Chiudi scheda">✕</button></header>
+      <p>Qui si paga. Per fare prima, ordina dalla LAG app: nel menu apri <em>Ordina qui</em>, scegli uno pseudonimo e invia l'ordine. Ricevi un numero e un QR.</p>
+      <p>In cassa mostri il QR e paghi. Il cibo lo ritiri in cucina, le bevande alle postazioni del bar e della birra.</p>
+      <a class="app-link" href="https://andreasalami.github.io/lag_app/#menu" target="_blank" rel="noopener">Menu e ordini nella LAG app ↗</a>
+    </article>
+
+    <article class="card" id="z-cucina" style="--zone: #e53935">
+      <header><span class="badge" aria-hidden="true">🍲</span><h2>Cucina</h2><button class="close" type="button" aria-label="Chiudi scheda">✕</button></header>
+      <p>Qui si ritira il cibo. Dopo il pagamento in cassa l'ordine arriva in cucina con il tuo numero e pseudonimo; lo stato lo segui dalla LAG app.</p>
+      <p>Piatti, prezzi, disponibilità e allergeni aggiornati sono nel menu dell'app.</p>
+      <a class="app-link" href="https://andreasalami.github.io/lag_app/#menu" target="_blank" rel="noopener">Menu nella LAG app ↗</a>
+    </article>
+
+    <article class="card" id="z-bar" style="--zone: #fb8c00">
+      <header><span class="badge" aria-hidden="true">🍸</span><h2>Bar</h2><button class="close" type="button" aria-label="Chiudi scheda">✕</button></header>
+      <p>Postazione delle bevande: le ritiri mostrando lo scontrino della cassa.</p>
+      <p>L'elenco completo, con prezzi e disponibilità, è nel menu della LAG app.</p>
+      <a class="app-link" href="https://andreasalami.github.io/lag_app/#menu" target="_blank" rel="noopener">Bevande nella LAG app ↗</a>
+    </article>
+
+    <article class="card" id="z-birra" style="--zone: #43a047">
+      <header><span class="badge" aria-hidden="true">🍺</span><h2>Birra</h2><button class="close" type="button" aria-label="Chiudi scheda">✕</button></header>
+      <p>La postazione delle birre, accanto al bar. Anche qui si ritira con lo scontrino della cassa.</p>
+      <p>Le birre disponibili e i prezzi aggiornati sono nel menu della LAG app.</p>
+      <a class="app-link" href="https://andreasalami.github.io/lag_app/#menu" target="_blank" rel="noopener">Birre nella LAG app ↗</a>
+    </article>
+
+    <article class="card" id="z-giochi" style="--zone: #8e24aa">
+      <header><span class="badge" aria-hidden="true">🎲</span><h2>Giochi</h2><button class="close" type="button" aria-label="Chiudi scheda">✕</button></header>
+      <p>L'angolo dei giochi e del torneo.</p>
+      <p>Turno in corso, ultimi risultati e tabellone completo sono nella LAG app.</p>
+      <a class="app-link" href="https://andreasalami.github.io/lag_app/#tornei" target="_blank" rel="noopener">Torneo nella LAG app ↗</a>
+    </article>
+
+    <article class="card" id="z-tavoli" style="--zone: #fdd835; --on: #0d2440">
+      <header><span class="badge" aria-hidden="true">🪑</span><h2>Zona tavoli</h2><button class="close" type="button" aria-label="Chiudi scheda">✕</button></header>
+      <p>Tavoli e panche al centro dell'aia, tra gli stand e i palchi: il posto per mangiare e riposarsi tra un set e l'altro.</p>
+      <a class="app-link" href="https://andreasalami.github.io/lag_app/#menu" target="_blank" rel="noopener">Cosa si mangia ↗</a>
+    </article>
+
+    <article class="card" id="z-stage1" style="--zone: #ffffff; --on: #0d2440">
+      <header><span class="badge" aria-hidden="true">🎵</span><h2>Stage 1</h2><button class="close" type="button" aria-label="Chiudi scheda">✕</button></header>
+      <p>Il palco principale, sull'aia della cascina: DJ set e musica live.</p>
+      <p>I due palchi suonano in contemporanea: orari e artisti sono nel programma della LAG app.</p>
+      <a class="app-link" href="https://andreasalami.github.io/lag_app/#programma" target="_blank" rel="noopener">Programma nella LAG app ↗</a>
+    </article>
+
+    <article class="card" id="z-stage2" style="--zone: #ffffff; --on: #0d2440">
+      <header><span class="badge" aria-hidden="true">🎧</span><h2>Stage 2 + birra &amp; cibo</h2><button class="close" type="button" aria-label="Chiudi scheda">✕</button></header>
+      <p>Il secondo palco, nel campo accanto alla cascina, con birra e cibo a portata di mano.</p>
+      <p>Chi suona e quando: guarda il programma nella LAG app.</p>
+      <a class="app-link" href="https://andreasalami.github.io/lag_app/#programma" target="_blank" rel="noopener">Programma nella LAG app ↗</a>
+    </article>
+
+    <footer class="site-footer">
+      <p><strong>Demo</strong>: mappa indicativa ricostruita dalla foto aerea di Cascina Marasco.</p>
+      <p><a href="https://andreasalami.github.io/lag_app/" target="_blank" rel="noopener">LAG app</a> · <a href="https://instagram.com/lagroaigiovani" target="_blank" rel="noopener">Instagram @lagroaigiovani</a> · Nessun cookie, nessun tracciamento.</p>
+    </footer>
+  </main>
+
+  <p id="hint" class="hint"><span class="keys">Tocca un'etichetta, oppure usa frecce o WASD</span><span class="touch">Tocca un'etichetta, oppure fai swipe per muoverti</span></p>
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</body>
+</html>

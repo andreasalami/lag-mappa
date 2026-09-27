@@ -1,0 +1,199 @@
+/* Base = modalità lettura (funziona anche senza JavaScript).
+   La classe .game su <html> attiva la mappa 3D; .reading torna alla lettura. */
+:root {
+  --ink: #0d2440;
+  --paper: #fffaf3;
+  --chip: #f3ece0;
+  --accent: #f2802e;
+  --font: ui-rounded, "SF Pro Rounded", "Arial Rounded MT Bold", "Nunito", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  font-family: var(--font);
+  color: var(--ink);
+  background: linear-gradient(#ffa35c, #c8627a 45%, #2c2a55) fixed;
+}
+
+body { margin: 0; min-height: 100vh; }
+
+canvas { position: fixed; inset: 0; display: none; }
+#world { z-index: 0; touch-action: none; }
+#sky { z-index: 30; pointer-events: none; }
+.game canvas { display: block; }
+.game body { overflow: hidden; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+
+/* Caricamento */
+.loading { display: none; }
+.js:not(.ready) .loading {
+  display: grid; place-items: center; position: fixed; inset: 0; z-index: 50;
+  font-weight: 900; font-size: 1.4rem; color: #fff; text-shadow: 0 3px 0 var(--ink);
+}
+.js:not(.ready) .topbar, .js:not(.ready) main { visibility: hidden; }
+
+/* Barra in alto */
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px 14px;
+  padding: 10px 16px;
+}
+.game .topbar { position: fixed; left: 0; right: 0; }
+
+.brand img { display: block; height: 68px; width: auto; filter: drop-shadow(0 3px 0 rgba(9, 20, 34, .45)); }
+
+.title h1 {
+  margin: 0; font-size: clamp(1.25rem, 3.4vw, 2rem); font-weight: 900; line-height: 1.05; color: #fff;
+  text-shadow: 0 3px 0 var(--ink), 2px 0 0 var(--ink), -2px 0 0 var(--ink), 0 -2px 0 var(--ink),
+    2px 2px 0 var(--ink), -2px 2px 0 var(--ink), 2px -2px 0 var(--ink), -2px -2px 0 var(--ink);
+}
+.title em { font-style: normal; color: var(--accent); }
+.title p {
+  display: inline-block; margin: 6px 0 0; padding: 3px 10px; border-radius: 8px;
+  background: var(--accent); color: #fff; font-weight: 800; font-size: .85rem;
+  box-shadow: 0 3px 0 var(--ink);
+}
+
+nav {
+  grid-column: 1 / -1;
+  display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none;
+  padding: 2px 2px 6px; margin: 0 0 -6px;
+}
+nav::-webkit-scrollbar { display: none; }
+
+nav a, #read-toggle, .close, .app-link {
+  flex: none; display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 11px; min-height: 40px;
+  border: 3px solid var(--ink); border-radius: 12px;
+  background: var(--paper); color: var(--ink);
+  font: 800 .92rem var(--font); text-decoration: none;
+  box-shadow: 0 4px 0 var(--ink);
+  cursor: pointer; transition: transform .08s, box-shadow .08s;
+}
+nav a:active, #read-toggle:active, .close:active, .app-link:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+nav a[aria-current] { background: var(--zone); color: var(--on, #fff); }
+#read-toggle { display: none; }
+.game #read-toggle { display: inline-flex; }
+#read-toggle[aria-pressed="true"] { background: var(--accent); color: #fff; }
+
+:focus-visible { outline: 3px solid #fff; outline-offset: 2px; box-shadow: 0 0 0 6px var(--ink); }
+
+/* Etichette sulla mappa */
+#pins { display: none; position: fixed; inset: 0; z-index: 5; pointer-events: none; overflow: hidden; }
+.game:not(.reading) #pins { display: block; }
+.pin {
+  position: absolute; left: 0; top: 0; pointer-events: auto;
+  display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+  padding: 5px 10px; border: 3px solid #fff; border-radius: 12px;
+  background: var(--zone); color: var(--on, #fff);
+  font: 900 .85rem var(--font); letter-spacing: .02em; text-transform: uppercase;
+  box-shadow: 0 4px 0 rgba(9, 20, 34, .55); cursor: pointer;
+}
+.pin::after {
+  content: ""; position: absolute; left: 50%; bottom: -12px; transform: translateX(-50%);
+  border: 7px solid transparent; border-top-color: #fff;
+}
+.pin.active { border-color: var(--accent); }
+.pin.active::after { border-top-color: var(--accent); }
+
+/* Schede */
+main {
+  position: relative; z-index: 10;
+  display: grid; gap: 22px;
+  max-width: 720px; margin: 16px auto 0; padding: 0 16px 32px;
+}
+
+.card {
+  background: var(--paper);
+  border: 3px solid var(--ink); border-radius: 18px;
+  box-shadow: 0 6px 0 var(--ink);
+  padding: 0 20px 18px;
+}
+.card > header {
+  display: flex; align-items: center; gap: 10px;
+  margin: 0 -20px 14px; padding: 10px 14px 10px 20px;
+  background: var(--zone); color: var(--on, #fff);
+  border-bottom: 3px solid var(--ink); border-radius: 15px 15px 0 0;
+}
+.card h2 { margin: 0; font-size: 1.3rem; font-weight: 900; line-height: 1.15; }
+.badge { font-size: 1.6rem; line-height: 1; }
+.card p { margin: 0 0 12px; line-height: 1.55; }
+.app-link { margin-top: 4px; background: var(--accent); color: #fff; }
+
+.close { display: none; margin-left: auto; padding: 4px 10px; min-height: 36px; font-size: .9rem; }
+
+.site-footer {
+  text-align: center; font-size: .9rem; font-weight: 700; line-height: 1.5; color: #fff;
+  padding: 8px 12px 16px; text-shadow: 0 2px 0 rgba(9, 20, 34, .6);
+}
+.site-footer p { margin: 0 0 6px; }
+.site-footer a { color: inherit; }
+
+/* Suggerimento comandi */
+.hint { display: none; }
+.hint .touch { display: none; }
+@media (pointer: coarse) {
+  .hint .keys { display: none; }
+  .hint .touch { display: inline; }
+}
+.game:not(.reading) .hint:not(.gone) {
+  display: block; position: fixed; z-index: 15; left: 16px; bottom: 16px; margin: 0;
+  padding: 8px 14px; border: 3px solid var(--ink); border-radius: 12px;
+  background: var(--paper); box-shadow: 0 4px 0 var(--ink);
+  font-weight: 800; font-size: .9rem;
+}
+
+/* Modalità gioco: una scheda alla volta */
+.game main {
+  position: fixed; margin: 0; padding: 0;
+  top: 150px; right: 16px; width: min(380px, calc(100vw - 32px));
+  max-height: calc(100vh - 176px);
+  display: block;
+}
+.game .card { display: none; max-height: inherit; overflow-y: auto; }
+.game .card.active { display: block; animation: pop .35s cubic-bezier(.3, 1.5, .5, 1); }
+.game .close { display: inline-flex; }
+.game:not(.reading) .site-footer { display: none; }
+
+@keyframes pop {
+  from { transform: translateY(16px) scale(.92); opacity: 0; }
+}
+
+/* Modalità lettura sopra la mappa */
+.game.reading main {
+  inset: 0; width: auto; max-height: none; overflow-y: auto;
+  display: grid; grid-template-columns: min(720px, 100%); justify-content: center; gap: 22px;
+  padding: 170px 16px 32px;
+  background: rgba(20, 24, 50, .55); backdrop-filter: blur(6px);
+}
+.game.reading .card { display: block; max-height: none; overflow: visible; animation: none; }
+.game.reading .close, .game.reading #sky { display: none; }
+
+@media (max-width: 899px) {
+  .topbar { padding: 8px 12px; gap: 8px 10px; }
+  .brand img { height: 48px; }
+  .title p { font-size: .75rem; margin-top: 4px; }
+  #read-toggle span { display: none; }
+  .game main {
+    top: auto; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom));
+    width: auto; max-height: 42vh;
+  }
+  .game .card { font-size: .95rem; }
+  .game:not(.reading) .hint:not(.gone) { top: 132px; bottom: auto; left: 12px; right: 12px; text-align: center; }
+  .game.reading main { padding-top: 140px; }
+}
+
+@media (max-width: 699px) {
+  .pin { padding: 4px 7px; font-size: .75rem; }
+  .pin .name { display: none; }
+  .pin.active .name { display: inline; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
