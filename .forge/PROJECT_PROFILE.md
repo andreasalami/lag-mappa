@@ -26,12 +26,19 @@
 - **Stand**: nel porticato dell'ala sud, rivolti verso la piazza.
 - **Stage 1**: sulla terra battuta davanti all'edificio ad archi a sud-ovest.
 - **Vista**: la telecamera guarda da nord-est.
-- **Stage 2**: nel cortile esterno a nord-est, al posto delle 5 auto (indicazione di Andrea).
+- **Stage 2**: consolle DJ appoggiata al muro del capannone, nel cortile esterno a nord-est (indicazione di Andrea).
+- **Portici** (indicazioni di Andrea, 2026-09-28):
+  - entrando nell'aia, a sinistra: casse, giochi e, in fondo, birra;
+  - il lato più visibile ha 8 archi tondi: da est uno libero, 3 bar, 4 cucina;
+  - l'edificio con i pannelli accanto allo Stage 1 ha portici che proseguono dopo la cucina.
+- **Ingresso**: tavolo dove si scansionano i biglietti; bici invece delle auto.
+- **Tetti con pannelli**: sono coppi con i pannelli solari sopra.
+- **Confini**: dietro lo Stage 1 ci sono le transenne; l'angolo a sud-ovest è una serra.
 
 **Ipotesi aperte:**
 
 - **Ingresso**: direzione d'ingresso dalla strada a est.
-- **Casse e Giochi**: nell'angolo nord-est.
+- **Muro "in fondo lato destro"**: letto come il lato ovest della cascina, dove il cortile di terra era aperto (vedi [intervento del 2026-09-28](changes/2026-09-28-portici-e-correzioni.md)).
 
 ## Documenti autorevoli
 
@@ -45,3 +52,4 @@
 - [2026-09-27 Prima demo](changes/2026-09-27-prima-demo.md)
 - [2026-09-27 Vista da nord e stand nel porticato](changes/2026-09-27-vista-da-nord.md)
 - [2026-09-27 Stage 2 nel cortile nord-est e movimento continuo](changes/2026-09-27-stage2-e-movimento-continuo.md)
+- [2026-09-28 Portici, ingresso e correzioni della cascina](changes/2026-09-28-portici-e-correzioni.md)

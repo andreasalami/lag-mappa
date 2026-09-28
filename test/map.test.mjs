@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { grid, zoneGrid, W, H, TILES, ZONE_CHARS, ZONES, START, walkable, zoneAt, zoneSpawn } from '../js/map.js';
+import { grid, zoneGrid, W, H, TILES, ZONE_CHARS, ZONES, START, ARCADES, walkable, zoneAt, zoneSpawn } from '../js/map.js';
 
 test('terreno e zone hanno la stessa forma e solo caratteri noti', () => {
   assert.equal(zoneGrid.length, H, 'numero di righe diverso tra terreno e zone');
@@ -21,7 +21,8 @@ test('fuori mappa ed edifici non sono calpestabili', () => {
   assert.equal(walkable(grid[barn].indexOf('S'), barn), false);
 });
 
-test("ogni zona è raggiungibile a piedi dall'ingresso", () => {
+// Caselle raggiungibili a piedi dalla partenza (visita in ampiezza).
+function reachable() {
   const seen = new Set([`${START.c},${START.r}`]);
   const queue = [START];
   while (queue.length) {
@@ -34,6 +35,11 @@ test("ogni zona è raggiungibile a piedi dall'ingresso", () => {
       }
     }
   }
+  return seen;
+}
+
+test("ogni zona è raggiungibile a piedi dall'ingresso", () => {
+  const seen = reachable();
   assert.equal(zoneAt(START.c, START.r), 'ingresso');
   for (const id of ZONES) {
     const spawn = zoneSpawn(id);
@@ -59,4 +65,20 @@ test('CSS e moduli in index.html hanno tutti la stessa versione ?v=', () => {
   for (const f of ['style.css', 'js/main.js', 'js/map.js', 'js/world.js', 'js/labels.js', 'js/overlay.js']) {
     assert.ok(html.includes(`${f}?v=`), `${f} senza versione`);
   }
+});
+
+test('dietro lo Stage 1 non si passa', () => {
+  const seen = reachable();
+  // Le transenne corrono a ovest del palco: la casella oltre ciascuna non si raggiunge.
+  grid.forEach((row, r) => [...row].forEach((t, c) => {
+    if (t === 'f') assert.equal(seen.has(`${c - 1},${r}`), false, `si passa oltre la transenna in ${c},${r}`);
+  }));
+});
+
+test('portici: casse, giochi e birra entrando a sinistra; di fronte 8 archi, uno libero, 3 bar e 4 cucina', () => {
+  const zones = (a) => a.arches.map((x) => x.zone);
+  const left = ARCADES.find((a) => zones(a).includes('casse'));
+  assert.deepEqual([...new Set(zones(left))], ['casse', 'giochi', 'birra']); // da nord, cioè dall'ingresso
+  const front = ARCADES.find((a) => zones(a).includes('bar'));
+  assert.deepEqual(zones(front).reverse(), [null, 'bar', 'bar', 'bar', 'cucina', 'cucina', 'cucina', 'cucina']); // da est
 });

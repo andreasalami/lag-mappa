@@ -7,7 +7,7 @@
   <meta name="description" content="Mappa 3D dell'evento L'Agro ai Giovani a Cascina Marasco (Cremona): palchi, cucina, bar, birra, giochi, casse e zona tavoli.">
   <meta name="theme-color" content="#091422">
   <link rel="icon" href="assets/favicon-32.png">
-  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="stylesheet" href="style.css?v=5">
   <script>
     // Senza JavaScript la pagina resta in modalità lettura; con JS mostra il caricamento
     // finché il 3D è pronto, o al massimo 8 secondi.
@@ -19,13 +19,13 @@
   <script type="importmap">{
     "imports": {
       "three": "./vendor/three/three.module.js",
-      "./js/map.js": "./js/map.js?v=4",
-      "./js/world.js": "./js/world.js?v=4",
-      "./js/labels.js": "./js/labels.js?v=4",
-      "./js/overlay.js": "./js/overlay.js?v=4"
+      "./js/map.js": "./js/map.js?v=5",
+      "./js/world.js": "./js/world.js?v=5",
+      "./js/labels.js": "./js/labels.js?v=5",
+      "./js/overlay.js": "./js/overlay.js?v=5"
     }
   }</script>
-  <script type="module" src="js/main.js?v=4" onerror="document.documentElement.classList.add('ready')"></script>
+  <script type="module" src="js/main.js?v=5" onerror="document.documentElement.classList.add('ready')"></script>
 </head>
 <body>
   <canvas id="world" aria-hidden="true"></canvas>
@@ -59,41 +59,41 @@
     <article class="card" id="z-ingresso" style="--zone: #1e3a5f">
       <header><span class="badge" aria-hidden="true">➡️</span><h2>Ingresso</h2><button class="close" type="button" aria-label="Chiudi scheda">✕</button></header>
       <p><strong>L'Agro ai Giovani</strong> è il festival benefico di Cascina Marasco, a Cremona: DJ set e musica live. Il ricavato sostiene Agropolis ONLUS.</p>
-      <p>Da qui parte il giro: tocca le etichette sulla mappa per vedere dove sono casse, stand e palchi, oppure muovi il personaggio.</p>
+      <p>Al tavolo dell'ingresso si scansionano i biglietti. Da qui parte il giro: tocca le etichette sulla mappa per vedere dove sono casse, stand e palchi, oppure muovi il personaggio.</p>
       <a class="app-link" href="https://andreasalami.github.io/lag_app/#biglietti" target="_blank" rel="noopener">Biglietti nella LAG app ↗</a>
     </article>
 
     <article class="card" id="z-casse" style="--zone: #1e88e5">
       <header><span class="badge" aria-hidden="true">🎫</span><h2>Casse</h2><button class="close" type="button" aria-label="Chiudi scheda">✕</button></header>
-      <p>Qui si paga. Per fare prima, ordina dalla LAG app: nel menu apri <em>Ordina qui</em>, scegli uno pseudonimo e invia l'ordine. Ricevi un numero e un QR.</p>
+      <p>Sotto il portico subito a sinistra, appena entri nell'aia. Qui si paga. Per fare prima, ordina dalla LAG app: nel menu apri <em>Ordina qui</em>, scegli uno pseudonimo e invia l'ordine. Ricevi un numero e un QR.</p>
       <p>In cassa mostri il QR e paghi. Il cibo lo ritiri in cucina, le bevande alle postazioni del bar e della birra.</p>
       <a class="app-link" href="https://andreasalami.github.io/lag_app/#menu" target="_blank" rel="noopener">Menu e ordini nella LAG app ↗</a>
     </article>
 
     <article class="card" id="z-cucina" style="--zone: #e53935">
       <header><span class="badge" aria-hidden="true">🍲</span><h2>Cucina</h2><button class="close" type="button" aria-label="Chiudi scheda">✕</button></header>
-      <p>Qui si ritira il cibo. Dopo il pagamento in cassa l'ordine arriva in cucina con il tuo numero e pseudonimo; lo stato lo segui dalla LAG app.</p>
+      <p>Nelle ultime quattro arcate del portico lungo. Qui si ritira il cibo. Dopo il pagamento in cassa l'ordine arriva in cucina con il tuo numero e pseudonimo; lo stato lo segui dalla LAG app.</p>
       <p>Piatti, prezzi, disponibilità e allergeni aggiornati sono nel menu dell'app.</p>
       <a class="app-link" href="https://andreasalami.github.io/lag_app/#menu" target="_blank" rel="noopener">Menu nella LAG app ↗</a>
     </article>
 
     <article class="card" id="z-bar" style="--zone: #fb8c00">
       <header><span class="badge" aria-hidden="true">🍸</span><h2>Bar</h2><button class="close" type="button" aria-label="Chiudi scheda">✕</button></header>
-      <p>Postazione delle bevande: le ritiri mostrando lo scontrino della cassa.</p>
+      <p>Postazione delle bevande nel portico lungo a otto arcate: le tre dopo la prima, che resta libera. Le bevande si ritirano mostrando lo scontrino della cassa.</p>
       <p>L'elenco completo, con prezzi e disponibilità, è nel menu della LAG app.</p>
       <a class="app-link" href="https://andreasalami.github.io/lag_app/#menu" target="_blank" rel="noopener">Bevande nella LAG app ↗</a>
     </article>
 
     <article class="card" id="z-birra" style="--zone: #43a047">
       <header><span class="badge" aria-hidden="true">🍺</span><h2>Birra</h2><button class="close" type="button" aria-label="Chiudi scheda">✕</button></header>
-      <p>La postazione delle birre, accanto al bar. Anche qui si ritira con lo scontrino della cassa.</p>
+      <p>La postazione delle birre, in fondo al portico delle casse, dopo i giochi. Anche qui si ritira con lo scontrino della cassa.</p>
       <p>Le birre disponibili e i prezzi aggiornati sono nel menu della LAG app.</p>
       <a class="app-link" href="https://andreasalami.github.io/lag_app/#menu" target="_blank" rel="noopener">Birre nella LAG app ↗</a>
     </article>
 
     <article class="card" id="z-giochi" style="--zone: #8e24aa">
       <header><span class="badge" aria-hidden="true">🎲</span><h2>Giochi</h2><button class="close" type="button" aria-label="Chiudi scheda">✕</button></header>
-      <p>L'angolo dei giochi e del torneo.</p>
+      <p>L'angolo dei giochi e del torneo, sotto il portico delle casse, subito dopo.</p>
       <p>Turno in corso, ultimi risultati e tabellone completo sono nella LAG app.</p>
       <a class="app-link" href="https://andreasalami.github.io/lag_app/#tornei" target="_blank" rel="noopener">Torneo nella LAG app ↗</a>
     </article>
@@ -113,7 +113,7 @@
 
     <article class="card" id="z-stage2" style="--zone: #ffffff; --on: #0d2440">
       <header><span class="badge" aria-hidden="true">🎧</span><h2>Stage 2 + birra &amp; cibo</h2><button class="close" type="button" aria-label="Chiudi scheda">✕</button></header>
-      <p>Il secondo palco, nel cortile esterno a nord-est della cascina, accanto al capannone con i pannelli solari: birra e cibo a portata di mano.</p>
+      <p>Una consolle DJ appoggiata al muro del capannone, nel cortile esterno a nord-est della cascina: birra e cibo a portata di mano.</p>
       <p>Chi suona e quando: guarda il programma nella LAG app.</p>
       <a class="app-link" href="https://andreasalami.github.io/lag_app/#programma" target="_blank" rel="noopener">Programma nella LAG app ↗</a>
     </article>

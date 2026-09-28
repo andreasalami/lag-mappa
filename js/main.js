@@ -228,7 +228,7 @@ function start() {
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
     animate(dt);
-    world.update(REDUCED ? 0 : dt);
+    world.update(REDUCED ? 0 : dt, player);
     target.set(hero.position.x, 0, hero.position.z + 1);
     focus.lerp(target, REDUCED ? 1 : 1 - Math.exp(-dt * 5));
     camera.position.copy(focus).add(OFFSET);
